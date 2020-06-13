@@ -1,0 +1,4 @@
+mongo_url: mongodb://archie.l.krnl.eu:27017/?compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&ssl=false
+db_driver: sqlite3
+db_url: prs.db
+verbose: true
