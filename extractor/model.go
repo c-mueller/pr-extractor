@@ -30,12 +30,12 @@ type PullRequestEvent struct {
 }
 
 type PullRequestEventPayload struct {
-	Action      string      `bson:"action"`
-	Number      int         `bson:"number"`
-	PullRequest PullRequest `bson:"pull_request"`
+	Action      string         `bson:"action"`
+	Number      int            `bson:"number"`
+	PullRequest ApiPullRequest `bson:"pull_request"`
 }
 
-type PullRequest struct {
+type ApiPullRequest struct {
 	URL               string     `bson:"url"`
 	NodeID            string     `bson:"node_id"`
 	State             string     `bson:"state"`

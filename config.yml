@@ -1,4 +1,4 @@
 mongo_url: mongodb://archie.l.krnl.eu:27017/?compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&ssl=false
-db_driver: sqlite3
-db_url: prs.db
+db_driver: postgres
+db_url: user=pulls dbname=pulls host=127.0.0.1  password=pulls port=5432 sslmode=disable
 verbose: true

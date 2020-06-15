@@ -5,19 +5,21 @@ import (
 	"time"
 )
 
-type SqlPr struct {
+type PullRequest struct {
 	gorm.Model
 
 	EventDbId string `gorm:"unique_index"`
 
-	RepoName string
+	PullRequestId string `sql:"index"`
+
+	RepoName string `sql:"index"`
 	RepoUrl  string
 	PRUrl    string
 	PRNumber int
 
 	State         string
 	PRAuthorLogin string
-	PRAuthorType  string
+	PRAuthorType  string `sql:"index"`
 
 	PullRequestCreatedAt time.Time
 	PullRequestUpdatedAt *time.Time
