@@ -5,6 +5,28 @@ import (
 	"time"
 )
 
+type PullRequestReviewComment struct {
+	gorm.Model
+
+	EventDbId     string `gorm:"unique_index"`
+	PullRequestId string `sql:"index"`
+	RepoName      string `sql:"index"`
+	RepoUrl       string
+	PRUrl         string
+	PRNumber      int
+
+	ReviewId int `sql:"index"`
+
+	CommentCreatedAt  time.Time
+	CommentUpdatedAt  time.Time
+	CommentAuthorName string
+	CommentAuthorType string
+
+	Body string
+
+	RawPayload []byte
+}
+
 type PullRequest struct {
 	gorm.Model
 
