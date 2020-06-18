@@ -26,7 +26,7 @@ type Exctractor struct {
 	stopFuncsPreSleep  []func()
 }
 
-func (e *Exctractor) Run() error {
+func (e *Exctractor) RunFull() error {
 	err := e.init()
 	if err != nil {
 		return err
@@ -37,7 +37,7 @@ func (e *Exctractor) Run() error {
 
 	go func() {
 		defer wg.Done()
-		err = e.loadPullRequests()
+		err := e.loadPullRequests()
 		if err != nil {
 			e.logger.WithError(err).Fatalf("Failed to load Pull Requests...")
 		}
@@ -45,13 +45,35 @@ func (e *Exctractor) Run() error {
 
 	go func() {
 		defer wg.Done()
-		err = e.loadPullRequestReviewComments()
+		err := e.loadPullRequestReviewComments()
 		if err != nil {
 			e.logger.WithError(err).Fatalf("Failed to load Pull Request review comments...")
 		}
 	}()
 
 	wg.Wait()
+
+	e.stopFuncsPostSleep = make([]func(), 0)
+	e.stopFuncsPreSleep = make([]func(), 0)
+
+	err = e.loadPullRequestReviewComments()
+	if err != nil {
+		e.logger.WithError(err).Fatalf("Failed to load Pull Request Issue comments...")
+	}
+
+	return nil
+}
+
+func (e *Exctractor) RunIssueComments() error {
+	err := e.init()
+	if err != nil {
+		return err
+	}
+
+	err = e.loadPullRequestReviewComments()
+	if err != nil {
+		e.logger.WithError(err).Fatalf("Failed to load Pull Request Issue comments...")
+	}
 
 	return nil
 }

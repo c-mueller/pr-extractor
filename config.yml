@@ -2,3 +2,5 @@ mongo_url: mongodb://archie.l.krnl.eu:27017/?compressors=zlib&readPreference=pri
 db_driver: postgres
 db_url: user=pulls dbname=pulls host=127.0.0.1  password=pulls port=5432 sslmode=disable
 verbose: true
+worker_count: 10
+worker_queue_length: 250

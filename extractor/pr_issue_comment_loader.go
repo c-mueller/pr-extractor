@@ -5,19 +5,19 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (e *Exctractor) loadPullRequestReviewComments() error {
+func (e *Exctractor) loadIssueComments() error {
 	filter := map[string]string{
-		"type": "PullRequestReviewCommentEvent",
+		"type": "IssueCommentEvent",
 	}
 	return e.runDataFetcher(filter, "events", func(data bson.Raw) error {
 		var evt PRReviewCommentEvent
 		_ = bson.Unmarshal(data, &evt)
 
-		return insertPullRequestReviewComment(evt, e, data, e.sqlDb)
-	}, "pull_request_review_comment_fetcher")
+		return insertIssueComments(evt, e, data, e.sqlDb)
+	}, "pull_request_issue_comment_fetcher")
 }
 
-func insertPullRequestReviewComment(evt PRReviewCommentEvent, e *Exctractor, elem bson.Raw, tx *gorm.DB) error {
+func insertIssueComments(evt PRReviewCommentEvent, e *Exctractor, elem bson.Raw, tx *gorm.DB) error {
 	eventId := getEventId(evt)
 
 	prId := getPullRequestId(evt)

@@ -11,18 +11,23 @@ import (
 	"gopkg.in/alecthomas/kingpin.v2"
 	"gopkg.in/yaml.v2"
 	"io/ioutil"
+	"os"
 )
 
 var (
-	configPath = kingpin.Arg("config-path", "Path to the configuration").ExistingFile()
+	fullCmd   = kingpin.Command("full", "Load all events from mongoDB")
+	issuesCmd = kingpin.Command("issues", "Load issue comment events from mongoDB")
+
+	configPath = kingpin.Flag("config-path", "Path to the configuration").Short('c').Default("config.yml").ExistingFile()
 )
 
 func init() {
-	kingpin.Parse()
+
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 }
 
 func main() {
+	cmd := kingpin.Parse()
 	contents, err := ioutil.ReadFile(*configPath)
 	if err != nil {
 		logrus.WithError(err).Fatal("Failed to load config")
@@ -36,10 +41,22 @@ func main() {
 		logrus.SetLevel(logrus.DebugLevel)
 	}
 
-	e := &extractor.Exctractor{Config: cfg}
-	err = e.Run()
-	if err != nil {
-		logrus.WithError(err).Fatal("Failed during extractor execution")
+	switch cmd {
+	case "full":
+		e := &extractor.Exctractor{Config: cfg}
+		err = e.RunFull()
+		if err != nil {
+			logrus.WithError(err).Fatal("Failed during extractor execution")
+		}
+		break
+	case "issues":
+		e := &extractor.Exctractor{Config: cfg}
+		err = e.RunIssueComments()
+		if err != nil {
+			logrus.WithError(err).Fatal("Failed during extractor execution")
+		}
+		break
+	default:
+		os.Exit(1)
 	}
-
 }
