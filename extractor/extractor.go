@@ -15,7 +15,7 @@ import (
 
 const GithubDbName = "github"
 
-type Exctractor struct {
+type Extractor struct {
 	Config config.Config
 
 	sqlDb              *gorm.DB
@@ -26,7 +26,7 @@ type Exctractor struct {
 	stopFuncsPreSleep  []func()
 }
 
-func (e *Exctractor) RunFull() error {
+func (e *Extractor) RunFull() error {
 	err := e.init()
 	if err != nil {
 		return err
@@ -64,7 +64,7 @@ func (e *Exctractor) RunFull() error {
 	return nil
 }
 
-func (e *Exctractor) RunIssueComments() error {
+func (e *Extractor) RunIssueComments() error {
 	err := e.init()
 	if err != nil {
 		return err
@@ -78,7 +78,7 @@ func (e *Exctractor) RunIssueComments() error {
 	return nil
 }
 
-func (e *Exctractor) init() error {
+func (e *Extractor) init() error {
 	e.logger = logrus.WithField("module", "extractor")
 
 	e.logger.Debug("Opening connection to the SQL DB")
@@ -94,6 +94,10 @@ func (e *Exctractor) init() error {
 
 	// TODO ADD MIGRATIONS
 	err = e.sqlDb.AutoMigrate(&PullRequest{}).Error
+	if err != nil {
+		return err
+	}
+	err = e.sqlDb.AutoMigrate(&PullRequestComment{}).Error
 	if err != nil {
 		return err
 	}
@@ -122,7 +126,7 @@ func (e *Exctractor) init() error {
 	return nil
 }
 
-func (e *Exctractor) initInterruptHook() {
+func (e *Extractor) initInterruptHook() {
 	e.stopFuncsPostSleep = make([]func(), 0)
 	e.stopFuncsPreSleep = make([]func(), 0)
 	chn := make(chan os.Signal, 1)

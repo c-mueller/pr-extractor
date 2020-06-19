@@ -12,6 +12,49 @@ type Event struct {
 	OrgInfo   *OrgInfo   `bson:"org"`
 }
 
+type PRCommentEvent struct {
+	ID        string                `bson:"id"`
+	Type      string                `bson:"type"`
+	Actor     EventActor            `bson:"actor"`
+	Repo      RepoInfo              `bson:"repo"`
+	Public    bool                  `bson:"public"`
+	CreatedAt time.Time             `bson:"created_at"`
+	OrgInfo   *OrgInfo              `bson:"org"`
+	Payload   PRCommentEventPayload `bson:"payload"`
+}
+
+type PRCommentEventPayload struct {
+	Action  string     `bson:"action"`
+	Comment ApiComment `bson:"comment"`
+	Issue   ApiIssue   `bson:"issue"`
+}
+
+type ApiIssue struct {
+	URL       string     `bson:"url"`
+	HtmlURL   string     `bson:"html_url"`
+	ID        int        `bson:"id"`
+	NodeID    string     `bson:"node_id"`
+	Number    int        `bson:"number"`
+	Title     string     `bson:"title"`
+	User      User       `bson:"user"`
+	State     string     `bson:"state"`
+	Comments  int        `bson:"comments"`
+	CreatedAt time.Time  `bson:"created_at"`
+	UpdatedAt time.Time  `bson:"updated_at"`
+	ClosedAt  *time.Time `bson:"closed_at"`
+}
+
+type ApiComment struct {
+	URL               string    `bson:"url"`
+	ID                int       `bson:"id"`
+	NodeID            string    `bson:"node_id"`
+	CreatedAt         time.Time `bson:"created_at"`
+	UpdatedAt         time.Time `bson:"updated_at"`
+	User              User      `bson:"user"`
+	AuthorAssociation string    `bson:"author_association"`
+	Body              string    `bson:"body"`
+}
+
 type PRReviewCommentEvent struct {
 	ID        string                      `bson:"id"`
 	Type      string                      `bson:"type"`
@@ -104,43 +147,4 @@ type EventActor struct {
 	Login        string `bson:"login"`
 	DisplayLogin string `bson:"display_login"`
 	URL          string `bson:"url"`
-}
-
-type PREvent interface {
-	GetRepoName() string
-	GetPullRequestNumber() int
-	GetPullRequestURL() string
-	GetEventTimestamp() time.Time
-}
-
-func (p PullRequestEvent) GetRepoName() string {
-	return p.Repo.Name
-}
-
-func (p PullRequestEvent) GetPullRequestNumber() int {
-	return p.Payload.Number
-}
-
-func (p PullRequestEvent) GetPullRequestURL() string {
-	return p.Payload.PullRequest.URL
-}
-
-func (p PullRequestEvent) GetEventTimestamp() time.Time {
-	return p.CreatedAt
-}
-
-func (p PRReviewCommentEvent) GetRepoName() string {
-	return p.Repo.Name
-}
-
-func (p PRReviewCommentEvent) GetPullRequestNumber() int {
-	return p.Payload.PullRequest.Number
-}
-
-func (p PRReviewCommentEvent) GetPullRequestURL() string {
-	return p.Payload.PullRequest.URL
-}
-
-func (p PRReviewCommentEvent) GetEventTimestamp() time.Time {
-	return p.CreatedAt
 }

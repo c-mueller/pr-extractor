@@ -1,11 +1,10 @@
 package extractor
 
 import (
-	"github.com/jinzhu/gorm"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (e *Exctractor) loadPullRequestReviewComments() error {
+func (e *Extractor) loadPullRequestReviewComments() error {
 	filter := map[string]string{
 		"type": "PullRequestReviewCommentEvent",
 	}
@@ -13,11 +12,11 @@ func (e *Exctractor) loadPullRequestReviewComments() error {
 		var evt PRReviewCommentEvent
 		_ = bson.Unmarshal(data, &evt)
 
-		return insertPullRequestReviewComment(evt, e, data, e.sqlDb)
+		return e.insertPullRequestReviewComment(evt, data)
 	}, "pull_request_review_comment_fetcher")
 }
 
-func insertPullRequestReviewComment(evt PRReviewCommentEvent, e *Exctractor, elem bson.Raw, tx *gorm.DB) error {
+func (e *Extractor) insertPullRequestReviewComment(evt PRReviewCommentEvent, elem bson.Raw) error {
 	eventId := getEventId(evt)
 
 	prId := getPullRequestId(evt)
@@ -44,5 +43,5 @@ func insertPullRequestReviewComment(evt PRReviewCommentEvent, e *Exctractor, ele
 		RawPayload:        comp,
 	}
 
-	return tx.Save(&revievCommentEvent).Error
+	return e.sqlDb.Save(&revievCommentEvent).Error
 }

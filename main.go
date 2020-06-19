@@ -43,14 +43,14 @@ func main() {
 
 	switch cmd {
 	case "full":
-		e := &extractor.Exctractor{Config: cfg}
+		e := &extractor.Extractor{Config: cfg}
 		err = e.RunFull()
 		if err != nil {
 			logrus.WithError(err).Fatal("Failed during extractor execution")
 		}
 		break
 	case "issues":
-		e := &extractor.Exctractor{Config: cfg}
+		e := &extractor.Extractor{Config: cfg}
 		err = e.RunIssueComments()
 		if err != nil {
 			logrus.WithError(err).Fatal("Failed during extractor execution")

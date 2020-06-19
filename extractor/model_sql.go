@@ -5,6 +5,26 @@ import (
 	"time"
 )
 
+type PullRequestComment struct {
+	gorm.Model
+
+	EventDbId     string `gorm:"unique_index"`
+	PullRequestId string `sql:"index"`
+	RepoName      string `sql:"index"`
+	RepoUrl       string
+	PRUrl         string
+	PRNumber      int `sql:"index"`
+
+	CommentCreatedAt  time.Time
+	CommentUpdatedAt  time.Time
+	CommentAuthorName string `sql:"index"`
+	CommentAuthorType string `sql:"index"`
+
+	Body string
+
+	RawPayload []byte
+}
+
 type PullRequestReviewComment struct {
 	gorm.Model
 
@@ -13,14 +33,14 @@ type PullRequestReviewComment struct {
 	RepoName      string `sql:"index"`
 	RepoUrl       string
 	PRUrl         string
-	PRNumber      int
+	PRNumber      int `sql:"index"`
 
 	ReviewId int `sql:"index"`
 
 	CommentCreatedAt  time.Time
 	CommentUpdatedAt  time.Time
-	CommentAuthorName string
-	CommentAuthorType string
+	CommentAuthorName string `sql:"index"`
+	CommentAuthorType string `sql:"index"`
 
 	Body string
 
@@ -37,10 +57,10 @@ type PullRequest struct {
 	RepoName string `sql:"index"`
 	RepoUrl  string
 	PRUrl    string
-	PRNumber int
+	PRNumber int `sql:"index"`
 
-	State         string
-	PRAuthorLogin string
+	State         string `sql:"index"`
+	PRAuthorLogin string `sql:"index"`
 	PRAuthorType  string `sql:"index"`
 
 	PullRequestCreatedAt time.Time
@@ -48,8 +68,8 @@ type PullRequest struct {
 	PullRequestClosedAt  *time.Time
 	PullRequestMergedAt  *time.Time
 
-	EventInitiatorLogin       string
-	EventInitiatorDisplayName string
+	EventInitiatorLogin       string `sql:"index"`
+	EventInitiatorDisplayName string `sql:"index"`
 
 	Comments     int
 	Commits      int

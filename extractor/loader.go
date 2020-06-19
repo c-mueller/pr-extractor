@@ -9,7 +9,7 @@ import (
 	"sync/atomic"
 )
 
-func (e *Exctractor) runDataFetcher(filter map[string]string, collectionName string, inserterFunc func(data bson.Raw) error, loggerName string) error {
+func (e *Extractor) runDataFetcher(filter map[string]string, collectionName string, inserterFunc func(data bson.Raw) error, loggerName string) error {
 	logger := e.logger.WithField("module", loggerName)
 
 	logger.Info("Fetching count from mongoDB")

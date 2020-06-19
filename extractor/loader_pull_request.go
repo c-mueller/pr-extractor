@@ -1,11 +1,10 @@
 package extractor
 
 import (
-	"github.com/jinzhu/gorm"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (e *Exctractor) loadPullRequests() error {
+func (e *Extractor) loadPullRequests() error {
 	filter := map[string]string{
 		"type": "PullRequestEvent",
 	}
@@ -13,11 +12,11 @@ func (e *Exctractor) loadPullRequests() error {
 		var evt PullRequestEvent
 		_ = bson.Unmarshal(data, &evt)
 
-		return insertPullRequest(evt, e, data, e.sqlDb)
+		return e.insertPullRequest(evt, data)
 	}, "pull_request_fetcher")
 }
 
-func insertPullRequest(evt PullRequestEvent, e *Exctractor, elem bson.Raw, tx *gorm.DB) error {
+func (e *Extractor) insertPullRequest(evt PullRequestEvent, elem bson.Raw) error {
 	eventId := getEventId(evt)
 
 	prId := getPullRequestId(evt)
@@ -53,5 +52,5 @@ func insertPullRequest(evt PullRequestEvent, e *Exctractor, elem bson.Raw, tx *g
 		EventAction:               evt.Payload.Action,
 		RawPayload:                comp,
 	}
-	return tx.Save(&resultEvt).Error
+	return e.sqlDb.Save(&resultEvt).Error
 }
