@@ -22,6 +22,9 @@ type PullRequestComment struct {
 
 	Body string
 
+	EventTimestamp time.Time `sql:"index"`
+	EventAction    string    `sql:"index"`
+
 	RawPayload []byte
 }
 
@@ -42,7 +45,9 @@ type PullRequestReviewComment struct {
 	CommentAuthorName string `sql:"index"`
 	CommentAuthorType string `sql:"index"`
 
-	Body string
+	Body           string
+	EventTimestamp time.Time `sql:"index"`
+	EventAction    string    `sql:"index"`
 
 	RawPayload []byte
 }
@@ -63,10 +68,10 @@ type PullRequest struct {
 	PRAuthorLogin string `sql:"index"`
 	PRAuthorType  string `sql:"index"`
 
-	PullRequestCreatedAt time.Time
+	PullRequestCreatedAt time.Time `sql:"index"`
 	PullRequestUpdatedAt *time.Time
 	PullRequestClosedAt  *time.Time
-	PullRequestMergedAt  *time.Time
+	PullRequestMergedAt  *time.Time `sql:"index"`
 
 	EventInitiatorLogin       string `sql:"index"`
 	EventInitiatorDisplayName string `sql:"index"`
@@ -77,8 +82,8 @@ type PullRequest struct {
 	Deletions    int
 	FilesChanged int
 
-	EventTimestamp time.Time
-	EventAction    string
+	EventTimestamp time.Time `sql:"index"`
+	EventAction    string    `sql:"index"`
 
 	RawPayload []byte
 }

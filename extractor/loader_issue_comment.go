@@ -78,6 +78,8 @@ func (e *Extractor) insertIssueComments(evt PRCommentEvent, elem bson.Raw) (bool
 		CommentAuthorName: evt.Payload.Comment.User.Login,
 		CommentAuthorType: evt.Payload.Comment.User.Type,
 		Body:              evt.Payload.Comment.Body,
+		EventTimestamp:    evt.CreatedAt,
+		EventAction:       evt.Payload.Action,
 		RawPayload:        comp,
 	}
 

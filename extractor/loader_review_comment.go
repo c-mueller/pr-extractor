@@ -40,6 +40,8 @@ func (e *Extractor) insertPullRequestReviewComment(evt PRReviewCommentEvent, ele
 		CommentAuthorName: evt.Payload.Comment.User.Login,
 		CommentAuthorType: evt.Payload.Comment.User.Type,
 		Body:              evt.Payload.Comment.Body,
+		EventTimestamp:    evt.CreatedAt,
+		EventAction:       evt.Payload.Action,
 		RawPayload:        comp,
 	}
 
