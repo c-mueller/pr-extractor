@@ -70,7 +70,7 @@ func (e *Extractor) RunIssueComments() error {
 		return err
 	}
 
-	err = e.loadPullRequestReviewComments()
+	err = e.loadIssueComments()
 	if err != nil {
 		e.logger.WithError(err).Fatalf("Failed to load Pull Request Issue comments...")
 	}

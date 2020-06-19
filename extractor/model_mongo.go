@@ -30,18 +30,19 @@ type PRCommentEventPayload struct {
 }
 
 type ApiIssue struct {
-	URL       string     `bson:"url"`
-	HtmlURL   string     `bson:"html_url"`
-	ID        int        `bson:"id"`
-	NodeID    string     `bson:"node_id"`
-	Number    int        `bson:"number"`
-	Title     string     `bson:"title"`
-	User      User       `bson:"user"`
-	State     string     `bson:"state"`
-	Comments  int        `bson:"comments"`
-	CreatedAt time.Time  `bson:"created_at"`
-	UpdatedAt time.Time  `bson:"updated_at"`
-	ClosedAt  *time.Time `bson:"closed_at"`
+	URL         string          `bson:"url"`
+	HtmlURL     string          `bson:"html_url"`
+	ID          int             `bson:"id"`
+	NodeID      string          `bson:"node_id"`
+	Number      int             `bson:"number"`
+	Title       string          `bson:"title"`
+	User        User            `bson:"user"`
+	State       string          `bson:"state"`
+	Comments    int             `bson:"comments"`
+	CreatedAt   time.Time       `bson:"created_at"`
+	UpdatedAt   time.Time       `bson:"updated_at"`
+	ClosedAt    *time.Time      `bson:"closed_at"`
+	PullRequest *ApiPullRequest `bson:"pull_request"`
 }
 
 type ApiComment struct {

@@ -50,7 +50,7 @@ func (p PRCommentEvent) GetPullRequestNumber() int {
 }
 
 func (p PRCommentEvent) GetPullRequestURL() string {
-	return p.Payload.Issue.URL
+	return p.Payload.Issue.PullRequest.URL
 }
 
 func (p PRCommentEvent) GetEventTimestamp() time.Time {

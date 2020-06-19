@@ -11,9 +11,10 @@ import (
 
 func getPullRequestId(evt PREvent) string {
 	prIdInput := fmt.Sprintf("%s#%d", evt.GetRepoName(), evt.GetPullRequestNumber())
-	h := sha256.New()
-	h.Write([]byte(prIdInput))
-	return hex.EncodeToString(h.Sum([]byte{}))
+	//h := sha256.New()
+	//h.Write([]byte(prIdInput))
+	//return hex.EncodeToString(h.Sum([]byte{}))
+	return prIdInput
 }
 
 func getEventId(evt PREvent) string {
