@@ -16,7 +16,9 @@ import (
 
 var (
 	fullCmd   = kingpin.Command("full", "Load all events from mongoDB")
-	issuesCmd = kingpin.Command("issues", "Load issue comment events from mongoDB")
+	issuesCmd = kingpin.Command("comments", "Load pr comment events from mongoDB")
+	issuesCmd = kingpin.Command("pull-requests", "Load pr events from mongoDB")
+	issuesCmd = kingpin.Command("review-comments", "Load pr review comment events from mongoDB")
 
 	configPath = kingpin.Flag("config-path", "Path to the configuration").Short('c').Default("config.yml").ExistingFile()
 )
@@ -49,9 +51,23 @@ func main() {
 			logrus.WithError(err).Fatal("Failed during extractor execution")
 		}
 		break
-	case "issues":
+	case "comments":
 		e := &extractor.Extractor{Config: cfg}
 		err = e.RunIssueComments()
+		if err != nil {
+			logrus.WithError(err).Fatal("Failed during extractor execution")
+		}
+		break
+	case "pull-requests":
+		e := &extractor.Extractor{Config: cfg}
+		err = e.RunPullRequests()
+		if err != nil {
+			logrus.WithError(err).Fatal("Failed during extractor execution")
+		}
+		break
+	case "review-comments":
+		e := &extractor.Extractor{Config: cfg}
+		err = e.RunReviewComments()
 		if err != nil {
 			logrus.WithError(err).Fatal("Failed during extractor execution")
 		}

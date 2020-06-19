@@ -33,7 +33,7 @@ func (e *Extractor) RunFull() error {
 	}
 
 	var wg sync.WaitGroup
-	wg.Add(2)
+	wg.Add(3)
 
 	go func() {
 		defer wg.Done()
@@ -48,6 +48,14 @@ func (e *Extractor) RunFull() error {
 		err := e.loadPullRequestReviewComments()
 		if err != nil {
 			e.logger.WithError(err).Fatalf("Failed to load Pull Request review comments...")
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		err := e.loadIssueComments()
+		if err != nil {
+			e.logger.WithError(err).Fatalf("Failed to load Pull Request Issue comments...")
 		}
 	}()
 
@@ -71,6 +79,34 @@ func (e *Extractor) RunIssueComments() error {
 	}
 
 	err = e.loadIssueComments()
+	if err != nil {
+		e.logger.WithError(err).Fatalf("Failed to load Pull Request Issue comments...")
+	}
+
+	return nil
+}
+
+func (e *Extractor) RunPullRequests() error {
+	err := e.init()
+	if err != nil {
+		return err
+	}
+
+	err = e.loadPullRequests()
+	if err != nil {
+		e.logger.WithError(err).Fatalf("Failed to load Pull Request Issue comments...")
+	}
+
+	return nil
+}
+
+func (e *Extractor) RunReviewComments() error {
+	err := e.init()
+	if err != nil {
+		return err
+	}
+
+	err = e.loadPullRequests()
 	if err != nil {
 		e.logger.WithError(err).Fatalf("Failed to load Pull Request Issue comments...")
 	}
