@@ -15,15 +15,14 @@ import (
 )
 
 var (
-	fullCmd   = kingpin.Command("full", "Load all events from mongoDB")
-	issuesCmd = kingpin.Command("comments", "Load pr comment events from mongoDB")
-	issuesCmd = kingpin.Command("pull-requests", "Load pr events from mongoDB")
-	issuesCmd = kingpin.Command("review-comments", "Load pr review comment events from mongoDB")
-
 	configPath = kingpin.Flag("config-path", "Path to the configuration").Short('c').Default("config.yml").ExistingFile()
 )
 
 func init() {
+	kingpin.Command("full", "Load all events from mongoDB")
+	kingpin.Command("comments", "Load pr comment events from mongoDB")
+	kingpin.Command("pull-requests", "Load pr events from mongoDB")
+	kingpin.Command("review-comments", "Load pr review comment events from mongoDB")
 
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 }
