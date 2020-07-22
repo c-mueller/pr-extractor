@@ -23,6 +23,7 @@ func init() {
 	kingpin.Command("comments", "Load pr comment events from mongoDB")
 	kingpin.Command("pull-requests", "Load pr events from mongoDB")
 	kingpin.Command("review-comments", "Load pr review comment events from mongoDB")
+	kingpin.Command("json", "load data from json (stdin) to import gharchive dumps")
 
 	logrus.SetFormatter(&logrus.JSONFormatter{})
 }
@@ -43,6 +44,13 @@ func main() {
 	}
 
 	switch cmd {
+	case "json":
+		e := &extractor.Extractor{Config: cfg}
+		err = e.LoadFromStdin()
+		if err != nil {
+			logrus.WithError(err).Fatal("Failed during extractor execution")
+		}
+		break
 	case "full":
 		e := &extractor.Extractor{Config: cfg}
 		err = e.RunFull()

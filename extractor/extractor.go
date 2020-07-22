@@ -1,7 +1,9 @@
 package extractor
 
 import (
+	"bufio"
 	"context"
+	"encoding/json"
 	"github.com/c-mueller/pr-extractor/config"
 	"github.com/jinzhu/gorm"
 	"github.com/sirupsen/logrus"
@@ -27,7 +29,7 @@ type Extractor struct {
 }
 
 func (e *Extractor) RunFull() error {
-	err := e.init()
+	err := e.init(true)
 	if err != nil {
 		return err
 	}
@@ -73,7 +75,7 @@ func (e *Extractor) RunFull() error {
 }
 
 func (e *Extractor) RunIssueComments() error {
-	err := e.init()
+	err := e.init(true)
 	if err != nil {
 		return err
 	}
@@ -87,7 +89,7 @@ func (e *Extractor) RunIssueComments() error {
 }
 
 func (e *Extractor) RunPullRequests() error {
-	err := e.init()
+	err := e.init(true)
 	if err != nil {
 		return err
 	}
@@ -101,7 +103,7 @@ func (e *Extractor) RunPullRequests() error {
 }
 
 func (e *Extractor) RunReviewComments() error {
-	err := e.init()
+	err := e.init(true)
 	if err != nil {
 		return err
 	}
@@ -114,7 +116,78 @@ func (e *Extractor) RunReviewComments() error {
 	return nil
 }
 
-func (e *Extractor) init() error {
+func (e *Extractor) LoadFromStdin() error {
+	err := e.init(false)
+	if err != nil {
+		return err
+	}
+
+	totalEventStats := make(map[string]uint)
+	failEventStats := make(map[string]uint)
+	scn := bufio.NewScanner(os.Stdin)
+	for scn.Scan() {
+		payload := scn.Bytes()
+		var evt Event
+		err = json.Unmarshal(payload, &evt)
+		if err != nil {
+			e.logger.WithError(err).Warn("Failed to read event. Skipping.")
+			continue
+		}
+		totalEventStats[evt.Type]++
+
+		switch evt.Type {
+		case "PullRequestEvent":
+			var prEvent PullRequestEvent
+			err = json.Unmarshal(payload, &prEvent)
+			if err != nil {
+				failEventStats[evt.Type]++
+				continue
+			}
+			err = e.insertPullRequest(prEvent, payload)
+			if err != nil {
+				failEventStats[evt.Type]++
+				continue
+			}
+			break
+		case "IssueCommentEvent":
+			var commentEvent PRCommentEvent
+			err = json.Unmarshal(payload, &commentEvent)
+			if err != nil {
+				failEventStats[evt.Type]++
+				continue
+			}
+			_, err = e.insertIssueComments(commentEvent, payload)
+			if err != nil {
+				failEventStats[evt.Type]++
+				continue
+			}
+			break
+		case "PullRequestReviewCommentEvent":
+			var reviewCommentEvent PRReviewCommentEvent
+			err = json.Unmarshal(payload, &reviewCommentEvent)
+			if err != nil {
+				failEventStats[evt.Type]++
+				continue
+			}
+			err = e.insertPullRequestReviewComment(reviewCommentEvent, payload)
+			if err != nil {
+				failEventStats[evt.Type]++
+				continue
+			}
+			break
+		default:
+			break
+		}
+	}
+
+	e.logger.Infof("Done Loading. Loaded the following events")
+	for s, u := range totalEventStats {
+		e.logger.Infof("%s: total=%d fail=%d", s, u, failEventStats[s])
+	}
+	return nil
+}
+
+func (e *Extractor) init(useMongo bool) error {
 	e.logger = logrus.WithField("module", "extractor")
 
 	e.logger.Debug("Opening connection to the SQL DB")
@@ -142,20 +215,23 @@ func (e *Extractor) init() error {
 		return err
 	}
 
-	e.logger.Debug("Connnecting to MongoDB")
+	if useMongo {
+		e.logger.Debug("Connnecting to MongoDB")
 
-	mongoClient, err := mongo.NewClient(options.Client().ApplyURI(e.Config.MongoUrl))
-	if err != nil {
-		e.logger.Error("Opening MongoDB Connection failed")
-		return err
-	}
-	e.mongoDb = mongoClient
-	if err = e.mongoDb.Connect(context.TODO()); err != nil {
-		e.logger.Error("connection to mongodb failed")
-		return err
-	}
+		mongoClient, err := mongo.NewClient(options.Client().ApplyURI(e.Config.MongoUrl))
+		if err != nil {
+			e.logger.Error("Opening MongoDB Connection failed")
+			return err
+		}
+		e.mongoDb = mongoClient
+		if err = e.mongoDb.Connect(context.TODO()); err != nil {
+			e.logger.Error("connection to mongodb failed")
+			return err
+		}
 
-	e.mongoDbDatabase = e.mongoDb.Database(GithubDbName)
+		e.mongoDbDatabase = e.mongoDb.Database(GithubDbName)
+
+	}
 
 	e.initInterruptHook()
 
@@ -176,7 +252,9 @@ func (e *Extractor) initInterruptHook() {
 			for _, stopFunc := range e.stopFuncsPostSleep {
 				stopFunc()
 			}
-			e.mongoDbDatabase.Client().Disconnect(context.TODO())
+			if e.mongoDbDatabase != nil {
+				e.mongoDbDatabase.Client().Disconnect(context.TODO())
+			}
 			e.sqlDb.Close()
 		}
 	}()

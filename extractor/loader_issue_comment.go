@@ -40,7 +40,7 @@ func (e *Extractor) loadIssueComments() error {
 	}, loggerMod)
 }
 
-func (e *Extractor) insertIssueComments(evt PRCommentEvent, elem bson.Raw) (bool, error) {
+func (e *Extractor) insertIssueComments(evt PRCommentEvent, elem []byte) (bool, error) {
 	tx := e.sqlDb.Begin()
 	defer tx.RollbackUnlessCommitted()
 
@@ -49,14 +49,6 @@ func (e *Extractor) insertIssueComments(evt PRCommentEvent, elem bson.Raw) (bool
 	}
 
 	prId := getPullRequestId(evt)
-
-	//var cnt int64
-	//err := tx.Where(&PullRequest{}, "pull_request_id = ?", prId).Count(&cnt).Error
-	//if err != nil {
-	//	return false, err
-	//} else if cnt == 0 {
-	//	return false, nil
-	//}
 
 	eventId := getEventId(evt)
 

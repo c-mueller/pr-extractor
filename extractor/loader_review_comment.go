@@ -16,7 +16,7 @@ func (e *Extractor) loadPullRequestReviewComments() error {
 	}, "pull_request_review_comment_fetcher")
 }
 
-func (e *Extractor) insertPullRequestReviewComment(evt PRReviewCommentEvent, elem bson.Raw) error {
+func (e *Extractor) insertPullRequestReviewComment(evt PRReviewCommentEvent, elem []byte) error {
 	eventId := getEventId(evt)
 
 	prId := getPullRequestId(evt)

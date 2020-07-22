@@ -1,6 +1,8 @@
 mongo_url: mongodb://archie.l.krnl.eu:27017/?compressors=zlib&readPreference=primary&gssapiServiceName=mongodb&ssl=false
-db_driver: postgres
-db_url: user=pulls dbname=pulls host=127.0.0.1  password=pulls port=5432 sslmode=disable
+db_driver: sqlite3
+#db_driver: postgres
+#db_url: user=pulls dbname=pulls host=127.0.0.1  password=pulls port=5432 sslmode=disable
+db_url: gharchive.db
 verbose: true
 worker_count: 10
 worker_queue_length: 250

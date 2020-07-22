@@ -16,7 +16,7 @@ func (e *Extractor) loadPullRequests() error {
 	}, "pull_request_fetcher")
 }
 
-func (e *Extractor) insertPullRequest(evt PullRequestEvent, elem bson.Raw) error {
+func (e *Extractor) insertPullRequest(evt PullRequestEvent, elem []byte) error {
 	eventId := getEventId(evt)
 
 	prId := getPullRequestId(evt)
