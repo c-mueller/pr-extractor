@@ -7,7 +7,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d // indirect
 	github.com/google/uuid v1.1.1 // indirect
 	github.com/jinzhu/gorm v1.9.16
-	github.com/sirupsen/logrus v1.6.0
+	github.com/sirupsen/logrus v1.7.0
 	github.com/stretchr/testify v1.6.1 // indirect
 	go.mongodb.org/mongo-driver v1.4.2
 	gopkg.in/alecthomas/kingpin.v2 v2.2.6
