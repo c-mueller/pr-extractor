@@ -1,6 +1,6 @@
 # `pr-extractor`
 
-This small utility programm is used to transform the `events` collection from GHTorrents MongoDB dump files into a relational data model, that can be used for further analysis using SQL. The usage of this tool is described [here](http://google.com)
+This small utility programm is used to transform the `events` collection from GHTorrents MongoDB dump files into a relational data model, that can be used for further analysis using SQL. The usage of this tool is described [here (GHTorrent)](loading-data-ghtorrent.md) and [here (GHArchive)](loading-data-ghtorrent.md)
 <!-- TODO: Insert URL to data generation manual -->
 
 ## Building `pr-exctractor`
