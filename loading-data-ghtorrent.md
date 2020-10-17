@@ -10,8 +10,8 @@
 - 6 Core CPU (AMD Ryzen R5 3600)
     - Lower specced CPUs also work, but with potentially lower performance
 - 1TB of SSD storage for MongoDB (Formatted with XFS)
+	- Required
     - XFS is optional, however MongoDB recommends using it in conjuction with the WiredTiger storage engine.
-    - Required
 - 3TB of Archival storage to store the raw dumps
     - Not needed, if the dump files are deleted after restore
 - A Third drive, to speed up the extraction of the `.tar.gz` archives.
@@ -126,15 +126,41 @@ worker_queue_length: 250
 
 Once the config file is written to disk run:
 ```
-./pr-extractor <Path to the config file>
+./pr-extractor full <Path to the config file>
 ```
+
 
 Assuming you are in same directory in which the binary is located.
 
 This command will take a while. In our case ~36 hours.
 
 
-## Step 5: Optimizing PostgreSQL query Performance
+## Step 5 (Optional): Optimizing PostgreSQL query Performance
+
+To run the queries we optimized our PostgreSQL instance to have more query memory and to utilize More CPU cores,
+however this step may not be mandatory. Some links on how this can be done are listed below:
+
+- https://andreigridnev.com/blog/2016-04-16-increase-work_mem-parameter-in-postgresql-to-make-expensive-queries-faster/
+
+## Step 6: Running the queries
+
+First we have to build the `bots` table containing all names we want to consider as a bot. This is done by running
+(assuming you are in the root of this repository, on the machine running postgres in docker):
+
+```
+cat sql/initialize_bots_table.sql | psql -h 127.0.0.1 -p 5432 -U pulls pulls
+```
+
+Next the data can be exported to `csv` format using this FISH script:
+
+```fish
+cd sql
+mkdir csv
+for i in q*.sql
+	set filename (echo $i | sed 's|sql|csv|g')
+	cat $i | psql --csv -h 127.0.0.1 -p 5432 -U pulls pulls > csv/$filename
+end
+```
 
 ## Appendix
 
